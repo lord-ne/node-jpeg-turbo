@@ -26,7 +26,7 @@
     "bindings": "^1.5.0",
     "cmake-js": "^6.3.0",
     "node-addon-api": "^3.2.1",
-    "prebuild-install": "^7.0.1"
+    "prebuild-install": "^7.1.0"
   },
   "scripts": {
     "rebuild": "cmake-js compile --target jpegturbo",
@@ -35,7 +35,7 @@
     "test": "jest"
   },
   "devDependencies": {
-    "jest": "^27.5.1",
+    "jest": "^28.0.3",
     "prebuild": "^11.0.3"
   }
 }
