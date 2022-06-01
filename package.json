@@ -24,7 +24,7 @@
   "types": "./module.d.ts",
   "dependencies": {
     "bindings": "^1.5.0",
-    "cmake-js": "^6.3.0",
+    "cmake-js": "github:cmake-js/cmake-js",
     "node-addon-api": "^3.2.1",
     "prebuild-install": "^7.1.0"
   },
@@ -37,5 +37,8 @@
   "devDependencies": {
     "jest": "^28.0.3",
     "prebuild": "^11.0.3"
+  },
+  "resolutions": {
+    "prebuild/cmake-js": "github:cmake-js/cmake-js"
   }
 }
