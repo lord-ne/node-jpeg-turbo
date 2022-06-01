@@ -1,9 +1,7 @@
 const { decompressSync, decompress, SAMP_444, FORMAT_BGR, FORMAT_BGRA, FORMAT_GRAY } = require("..");
-const { promisify } = require("util");
 const { readFileSync } = require("fs");
 const path = require("path");
 
-const decompress2 = (decompress);
 
 const sampleJpeg1 = readFileSync(path.join(__dirname, "github_logo.jpg"));
 const sampleJpeg1Pixels = 560 * 560;
@@ -82,14 +80,15 @@ describe("decompress", () => {
     expect(res1.format).toEqual(options.format);
     expect(res1.size).toEqual(target);
 
-    const res2 = await decompress2(sampleJpeg1, dest, options);
+    const res2 = await decompress(sampleJpeg1, dest, options);
     expect(res2.data.length).toEqual(target);
-    expect(res2).toEqual(res1);
+    expect({...res2, data: null}).toEqual({...res1, data: null});
+    expect(res2.data.toString('base64')).toEqual(res1.data.toString('base64'));
 
     const res3 = decompressSync(sampleJpeg1, options);
     expect(res3.data.length).toEqual(target);
 
-    const res4 = await decompress2(sampleJpeg1, options);
+    const res4 = await decompress(sampleJpeg1, options);
     expect(res4.data.length).toEqual(target);
 
     // Overfeed the dest buffer

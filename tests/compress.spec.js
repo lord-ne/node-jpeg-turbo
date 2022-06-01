@@ -1,6 +1,5 @@
 const { compressSync, compress, bufferSize, SAMP_444, FORMAT_BGR, FORMAT_BGRA, FORMAT_GRAY } = require("..");
 
-const compress2 = (compress);
 
 describe("compress", () => {
   test("check compressSync parameters", () => {
@@ -217,7 +216,7 @@ describe("compress", () => {
       format: FORMAT_GRAY
     };
     expect(() => compressSync(source, options)).toThrow();
-    expect(async () => await compress2(source, options).rejects).toBeTruthy();
+    expect(async () => await compress(source, options).rejects).toBeTruthy();
   });
 
   test("check result length", async () => {
@@ -232,13 +231,13 @@ describe("compress", () => {
     expect(res1.length).toBeLessThanOrEqual(dest.length);
     expect(res1.length).toBeGreaterThan(500);
 
-    const res2 = await compress2(source, dest, options);
+    const res2 = await compress(source, dest, options);
     expect(res2.length).toEqual(res1.length);
 
     const res3 = compressSync(source, options);
     expect(res3.length).toEqual(res1.length);
 
-    const res4 = await compress2(source, options);
+    const res4 = await compress(source, options);
     expect(res4.length).toEqual(res1.length);
   });
 
@@ -262,13 +261,13 @@ describe("compress", () => {
     expect(res1.length).toBeLessThanOrEqual(dest.length);
     expect(res1.length).toBeGreaterThan(500);
 
-    const res2 = await compress2(source1, dest, options);
+    const res2 = await compress(source1, dest, options);
     expect(res2.length).toEqual(res1.length);
 
     const res3 = compressSync(source1, options);
     expect(res3.length).toEqual(res1.length);
 
-    const res4 = await compress2(source1, options);
+    const res4 = await compress(source1, options);
     expect(res4.length).toEqual(res1.length);
   });
 });
