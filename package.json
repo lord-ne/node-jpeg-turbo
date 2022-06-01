@@ -14,7 +14,7 @@
   },
   "binary": {
     "napi_versions": [
-      3
+      7
     ]
   },
   "engines": {
@@ -25,7 +25,7 @@
   "dependencies": {
     "bindings": "^1.5.0",
     "cmake-js": "github:cmake-js/cmake-js",
-    "node-addon-api": "^3.2.1",
+    "node-addon-api": "^5.0.0",
     "prebuild-install": "^7.1.0"
   },
   "scripts": {
