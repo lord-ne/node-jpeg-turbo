@@ -1,4 +1,4 @@
-project (jpegturbo)
+project (jpeg-turbo)
 
 # define NPI_VERSION
 add_definitions(-DNAPI_VERSION=7)
