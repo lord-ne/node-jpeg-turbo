@@ -24,10 +24,11 @@
   "types": "./module.d.ts",
   "dependencies": {
     "cmake-js": "7.0.0-1",
-    "node-addon-api": "^5.0.0"
+    "node-addon-api": "^5.0.0",
+    "pkg-prebuilds": "^0.0.2"
   },
   "scripts": {
-    "install": "cmake-js-verify ./binding-options.js || cmake-js compile --target jpeg-turbo",
+    "install": "pkg-prebuilds-verify ./binding-options.js || cmake-js compile --target jpeg-turbo",
     "rebuild": "cmake-js rebuild --target jpeg-turbo",
     "test": "jest"
   },

@@ -98,7 +98,7 @@ jobs:
           fi
 
           yarn rebuild --arch=${{ matrix.arch }}
-          yarn cmake-js-prebuildify --source build/Release/$BINDING_NAME.node --name=$BINDING_NAME --strip  --napi_version=$NAPI_VERSION --arch=${{ matrix.arch }}
+          yarn pkg-prebuilds-copy --source build/Release/$BINDING_NAME.node --name=$BINDING_NAME --strip  --napi_version=$NAPI_VERSION --arch=${{ matrix.arch }}
         env:
           CI: true
           npm_config_build_from_source: true
@@ -129,7 +129,7 @@ jobs:
             yarn
             yarn test
 
-            yarn cmake-js-prebuildify --source build/Release/$BINDING_NAME.node --name=$BINDING_NAME --strip --napi_version=$NAPI_VERSION --arch=${{ matrix.arch }} --libc=${{ matrix.libc }}
+            yarn pkg-prebuilds-copy --source build/Release/$BINDING_NAME.node --name=$BINDING_NAME --strip --napi_version=$NAPI_VERSION --arch=${{ matrix.arch }} --libc=${{ matrix.libc }}
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3

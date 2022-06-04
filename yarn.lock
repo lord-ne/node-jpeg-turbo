@@ -1996,6 +1996,11 @@ pkg-dir@^4.2.0:
   dependencies:
     find-up "^4.0.0"
 
+pkg-prebuilds@^0.0.2:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/pkg-prebuilds/-/pkg-prebuilds-0.0.2.tgz#1f4f5dc26a3043c7dcf39fc7aa79fff4389df97a"
+  integrity sha512-gsjn9BkOCZtAyCgC96zkGkODgTEy9+31zNGL7Tk2ODx5w2O+fc90rDzX9PWEbGNy6iRRzK3opLKmfZhwQN5uOQ==
+
 pretty-format@^28.1.0:
   version "28.1.0"
   resolved "https://registry.yarnpkg.com/pretty-format/-/pretty-format-28.1.0.tgz#8f5836c6a0dfdb834730577ec18029052191af55"
