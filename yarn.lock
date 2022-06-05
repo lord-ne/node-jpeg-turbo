@@ -611,9 +611,9 @@
     "@types/istanbul-lib-report" "*"
 
 "@types/node@*":
-  version "17.0.38"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-17.0.38.tgz#f8bb07c371ccb1903f3752872c89f44006132947"
-  integrity sha512-5jY9RhV7c0Z4Jy09G+NIDTsCZ5G0L5n+Z+p+Y7t5VJHM30bgwzSjVtlcBxqAj+6L/swIlvtOSzr8rBk/aNyV2g==
+  version "17.0.40"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-17.0.40.tgz#76ee88ae03650de8064a6cf75b8d95f9f4a16090"
+  integrity sha512-UXdBxNGqTMtm7hCwh9HtncFVLrXoqA3oJW30j6XWp5BH/wu3mVeaxo7cq5benFdBw34HB3XDT2TRPI7rXZ+mDg==
 
 "@types/prettier@^2.1.5":
   version "2.6.3"
@@ -878,16 +878,17 @@ cliui@^7.0.2:
     strip-ansi "^6.0.0"
     wrap-ansi "^7.0.0"
 
-cmake-js@7.0.0-1:
-  version "7.0.0-1"
-  resolved "https://registry.yarnpkg.com/cmake-js/-/cmake-js-7.0.0-1.tgz#55452e92df0614c7b7fe1de15b9404aa9db22ee0"
-  integrity sha512-z9U3gTa7yFXx+MPzxv3NQlGSrkX5yR5WXNg7wEmxNTmMOf/VTxZpA/TjRBaDHFCoEScyjF+o6VXqiA53ZJVFjw==
+cmake-js@7.0.0-2:
+  version "7.0.0-2"
+  resolved "https://registry.yarnpkg.com/cmake-js/-/cmake-js-7.0.0-2.tgz#969945ad95c8493a86f335b660ea1afdea30e208"
+  integrity sha512-Ucgt3IG098TT0TnT8rprwMk85264N4eA8dJZCgfiWFZ7MHIMVPC46HCK4jbKIc0G0OR0USxStkfVfXkfDqiWzQ==
   dependencies:
     axios "^0.27.2"
     debug "^4"
     fs-extra "^10.1.0"
     lodash.isplainobject "^4.0.6"
     memory-stream "^1.0.0"
+    node-api-headers "^0.0.1"
     npmlog "^6.0.2"
     rc "^1.2.7"
     semver "^7.3.7"
@@ -1011,9 +1012,9 @@ diff-sequences@^28.0.2:
   integrity sha512-YtEoNynLDFCRznv/XDalsKGSZDoj0U5kLnXvY0JSq3nBboRrZXjD81+eSiwi+nzcZDwedMmcowcxNwwgFW23mQ==
 
 electron-to-chromium@^1.4.118:
-  version "1.4.144"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.144.tgz#9a5d1f41452ecc65b686d529ae919248da44f406"
-  integrity sha512-R3RV3rU1xWwFJlSClVWDvARaOk6VUO/FubHLodIASDB3Mc2dzuWvNdfOgH9bwHUTqT79u92qw60NWfwUdzAqdg==
+  version "1.4.146"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.146.tgz#fd20970c3def2f9e6b32ac13a2e7a6b64e1b0c48"
+  integrity sha512-4eWebzDLd+hYLm4csbyMU2EbBnqhwl8Oe9eF/7CBDPWcRxFmqzx4izxvHH+lofQxzieg8UbB8ZuzNTxeukzfTg==
 
 emittery@^0.10.2:
   version "0.10.2"
@@ -1878,6 +1879,11 @@ node-addon-api@^5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/node-addon-api/-/node-addon-api-5.0.0.tgz#7d7e6f9ef89043befdb20c1989c905ebde18c501"
   integrity sha512-CvkDw2OEnme7ybCykJpVcKH+uAOLV2qLqiyla128dN9TkEWfrYmxG6C2boDe5KcNQqZF3orkqzGgOMvZ/JNekA==
+
+node-api-headers@^0.0.1:
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/node-api-headers/-/node-api-headers-0.0.1.tgz#e49821048943e50d5b93bc12ada0dd072d2b0769"
+  integrity sha512-eRxckUSXMRQRV69h+ksfleQzR3BdRwkJuc/Y65KFFwhibC5G1y6wgytYW2WWTB/oG1bt+pf2RwjZDYC0xKqgqQ==
 
 node-int64@^0.4.0:
   version "0.4.0"

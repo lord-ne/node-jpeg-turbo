@@ -23,7 +23,7 @@
   "main": "./index.js",
   "types": "./module.d.ts",
   "dependencies": {
-    "cmake-js": "7.0.0-1",
+    "cmake-js": "7.0.0-2",
     "node-addon-api": "^5.0.0",
     "pkg-prebuilds": "^0.0.2"
   },
