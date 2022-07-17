@@ -1,4 +1,4 @@
-var binding = require("pkg-prebuilds/bindings")(
+const binding = require("pkg-prebuilds")(
   __dirname,
   require("./binding-options")
 );

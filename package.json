@@ -25,7 +25,7 @@
   "dependencies": {
     "cmake-js": "7.0.0-3",
     "node-addon-api": "^5.0.0",
-    "pkg-prebuilds": "^0.0.2"
+    "pkg-prebuilds": "~0.1.0"
   },
   "scripts": {
     "install": "pkg-prebuilds-verify ./binding-options.js || cmake-js compile --target jpeg-turbo",
@@ -33,6 +33,6 @@
     "test": "jest"
   },
   "devDependencies": {
-    "jest": "^28.0.3"
+    "jest": "^28.1.3"
   }
 }
