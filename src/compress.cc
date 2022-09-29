@@ -54,22 +54,10 @@ std::string DoCompress(CompressProps &props)
   return "";
 }
 
-void compressBufferFreeCallback(Napi::Env env, unsigned char *data)
-{
-  tjFree(data);
-}
-
 Napi::Object CompressResult(const Napi::Env &env, const Napi::Buffer<unsigned char> dstBuffer, const CompressProps &props)
 {
-  Napi::Buffer<unsigned char> resBuffer = dstBuffer;
-
-  if (resBuffer.IsEmpty())
-  {
-    resBuffer = Napi::Buffer<unsigned char>::New(env, props.resData, props.resSize, compressBufferFreeCallback);
-  }
-
   Napi::Object res = Napi::Object::New(env);
-  res.Set("data", resBuffer);
+  res.Set("data", dstBuffer);
   res.Set("size", props.resSize);
 
   return res;
@@ -249,23 +237,21 @@ Napi::Value CompressInner(const Napi::CallbackInfo &info, bool async)
     return env.Null();
   }
 
-  props.flags = TJFLAG_FASTDCT;
-  props.resSize = 0;
-  props.resData = nullptr;
-
   uint32_t dstLength = tjBufSize(props.width, props.height, props.subsampling);
-  if (!dstBuffer.IsEmpty())
+  if (dstBuffer.IsEmpty())
   {
-    props.flags |= TJFLAG_NOREALLOC;
-    props.resSize = dstBuffer.Length();
-    props.resData = dstBuffer.Data();
-
-    if (dstLength > props.resSize)
-    {
-      Napi::TypeError::New(env, "Insufficient output buffer").ThrowAsJavaScriptException();
-      return env.Null();
-    }
+    dstBuffer = Napi::Buffer<unsigned char>::New(env, dstLength);
   }
+
+  if (dstLength > dstBuffer.Length())
+  {
+    Napi::TypeError::New(env, "Insufficient output buffer").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
+  props.flags = TJFLAG_FASTDCT | TJFLAG_NOREALLOC;
+  props.resSize = dstBuffer.Length();
+  props.resData = dstBuffer.Data();
 
   if (async)
   {

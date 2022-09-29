@@ -2,6 +2,7 @@
 
 struct DecompressProps
 {
+  tjhandle handle;
   unsigned char *srcData;
   uint32_t srcLength;
   uint32_t format;
@@ -14,72 +15,27 @@ struct DecompressProps
 
 std::string DoDecompress(DecompressProps &props)
 {
-  tjhandle handle = tjInitDecompress();
-  if (handle == nullptr)
-  {
-    return tjGetErrorStr();
-  }
 
-  int err = tjDecompressHeader(handle, props.srcData, props.srcLength, &props.resWidth, &props.resHeight);
+  int err = tjDecompress2(props.handle, props.srcData, props.srcLength, props.resData, props.resWidth, 0, props.resHeight, props.format, TJFLAG_FASTDCT);
   if (err != 0)
   {
-    tjDestroy(handle);
+    tjDestroy(props.handle);
     return tjGetErrorStr();
   }
 
-  uint32_t oldSize = props.resSize;
-  props.resSize = props.resWidth * props.resHeight * props.bpp;
-  if (props.resData != nullptr)
-  {
-    if (oldSize < props.resSize)
-    {
-      tjDestroy(handle);
-      return "Insufficient output buffer";
-    }
-  }
-  else
-  {
-    props.resData = (unsigned char *)malloc(props.resSize);
-  }
-
-  err = tjDecompress2(handle, props.srcData, props.srcLength, props.resData, props.resWidth, 0, props.resHeight, props.format, TJFLAG_FASTDCT);
-  if (err != 0)
-  {
-    tjDestroy(handle);
-    return tjGetErrorStr();
-  }
-
-  err = tjDestroy(handle);
+  err = tjDestroy(props.handle);
   if (err != 0)
   {
     return tjGetErrorStr();
-  }
-
-  if (props.resData == nullptr)
-  {
-    return "No output data";
   }
 
   return "";
 }
 
-void deCompressBufferFreeCallback(Napi::Env env, unsigned char *data)
-{
-  tjFree(data);
-}
-
-
 Napi::Object DecompressResult(const Napi::Env &env, const Napi::Buffer<unsigned char> dstBuffer, const DecompressProps &props)
 {
-  Napi::Buffer<unsigned char> resBuffer = dstBuffer;
-
-  if (resBuffer.IsEmpty())
-  {
-    resBuffer = Napi::Buffer<unsigned char>::New(env, props.resData, props.resSize,deCompressBufferFreeCallback);
-  }
-
   Napi::Object res = Napi::Object::New(env);
-  res.Set("data", resBuffer);
+  res.Set("data", dstBuffer);
   res.Set("size", props.resSize);
   res.Set("width", props.resWidth);
   res.Set("height", props.resHeight);
@@ -222,12 +178,39 @@ Napi::Value DecompressInner(const Napi::CallbackInfo &info, bool async)
     return env.Null();
   }
 
-  props.resSize = 0;
-  props.resData = nullptr;
-  if (!dstBuffer.IsEmpty())
+  tjhandle handle = tjInitDecompress();
+  if (handle == nullptr)
   {
-    props.resSize = dstBuffer.Length();
-    props.resData = dstBuffer.Data();
+    Napi::TypeError::New(env, tjGetErrorStr()).ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
+  props.handle = handle;
+
+  int err = tjDecompressHeader(handle, props.srcData, props.srcLength, &props.resWidth, &props.resHeight);
+  if (err != 0)
+  {
+    tjDestroy(handle);
+
+    Napi::TypeError::New(env, tjGetErrorStr()).ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
+  auto targetSize = props.resWidth * props.resHeight * props.bpp;
+  if (dstBuffer.IsEmpty())
+  {
+    dstBuffer = Napi::Buffer<unsigned char>::New(env, targetSize);
+  }
+
+  props.resSize = targetSize;
+  props.resData = dstBuffer.Data();
+
+  if (targetSize > dstBuffer.Length())
+  {
+    tjDestroy(handle);
+
+    Napi::TypeError::New(env, "Insufficient output buffer").ThrowAsJavaScriptException();
+    return env.Null();
   }
 
   if (async)
