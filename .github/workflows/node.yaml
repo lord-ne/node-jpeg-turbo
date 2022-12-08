@@ -41,22 +41,22 @@ jobs:
             arch: arm64
             is-native: false
             docker-arch: linux/arm64
-            docker-image: node:14-buster
+            docker-image: node:16-buster
           - os: ubuntu-latest
             arch: arm
             is-native: false
             docker-arch: linux/arm/v7
-            docker-image: node:14-buster
+            docker-image: node:16-buster
           # linux-musl
           - os: ubuntu-latest
             arch: x64
             is-native: false
             docker-arch: linux/amd64
-            docker-image: node:14-alpine
+            docker-image: node:16-alpine
             libc: musl
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Checkout submodules
         shell: bash
         run: |
@@ -82,10 +82,10 @@ jobs:
         run: |
           brew install yasm
 
-      - name: Use Node.js 14.x
-        uses: actions/setup-node@v1
+      - name: Use Node.js 16.x
+        uses: actions/setup-node@v3
         with:
-          node-version: 14.x
+          node-version: 16.x
 
       - name: rebuild
         if: ${{ !matrix.docker-arch }}
@@ -116,8 +116,9 @@ jobs:
           run: |
             if command -v apt-get &> /dev/null
             then
-              apt-get update
-              apt-get install -y cmake yasm
+              echo "deb http://deb.debian.org/debian buster-backports main contrib non-free" | tee -a /etc/apt/sources.list.d/backports.list
+              apt update
+              apt install -y cmake/buster-backports yasm
             elif command -v apk &> /dev/null
             then
               apk update
