@@ -29,14 +29,28 @@ set(SOURCE_FILES
   "src/exports.cc"
 )
 
-option(WITH_JPEG8 "" 1)
-option(ENABLE_SHARED "" 0)
+if(UNIX AND NOT APPLE)
+  # build shared on linux, to avoid conflicts with libjpeg built into electron
+  option(ENABLE_SHARED "" 1)
+  option(ENABLE_STATIC "" 0)
+  set(LINK_JPEG "turbojpeg")
+else()
+  # build static elsewhere
+  option(ENABLE_SHARED "" 0)
+  option(ENABLE_STATIC "" 1)
+  set(LINK_JPEG "turbojpeg-static")
+endif()
+
+option(WITH_JPEG8 "" 0)
 add_subdirectory("deps/libjpeg-turbo")
+
+set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
+set(CMAKE_INSTALL_RPATH "$ORIGIN")
 
 add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES} ${HEADER_FILES} ${CMAKE_JS_SRC})
 set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "" SUFFIX ".node")
 target_include_directories(${PROJECT_NAME} PRIVATE "deps/libjpeg-turbo")
-target_link_libraries(${PROJECT_NAME} ${CMAKE_JS_LIB} turbojpeg-static)
+target_link_libraries(${PROJECT_NAME} ${CMAKE_JS_LIB} ${LINK_JPEG})
 
 if(MSVC AND CMAKE_JS_NODELIB_DEF AND CMAKE_JS_NODELIB_TARGET)
   # Generate node.lib

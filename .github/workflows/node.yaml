@@ -36,17 +36,20 @@ jobs:
           - os: ubuntu-18.04
             arch: x64
             is-native: true
+            extra-copy-args: --extraFiles libturbojpeg.so.0
           # linux-libc
           - os: ubuntu-latest
             arch: arm64
             is-native: false
             docker-arch: linux/arm64
             docker-image: node:16-buster
+            extra-copy-args: --extraFiles libturbojpeg.so.0
           - os: ubuntu-latest
             arch: arm
             is-native: false
             docker-arch: linux/arm/v7
             docker-image: node:16-buster
+            extra-copy-args: --extraFiles libturbojpeg.so.0
           # linux-musl
           - os: ubuntu-latest
             arch: x64
@@ -54,6 +57,7 @@ jobs:
             docker-arch: linux/amd64
             docker-image: node:16-alpine
             libc: musl
+            extra-copy-args: --extraFiles libturbojpeg.so.0
 
     steps:
       - uses: actions/checkout@v3
@@ -98,7 +102,13 @@ jobs:
           fi
 
           yarn rebuild --arch=${{ matrix.arch }}
-          yarn pkg-prebuilds-copy --source build/Release/$BINDING_NAME.node --name=$BINDING_NAME --strip  --napi_version=$NAPI_VERSION --arch=${{ matrix.arch }}
+          yarn pkg-prebuilds-copy ${{ matrix.extra-copy-args }} \
+            --baseDir build/Release \
+            --source $BINDING_NAME.node \
+            --name=$BINDING_NAME \
+            --strip  \
+            --napi_version=$NAPI_VERSION \
+            --arch=${{ matrix.arch }}
         env:
           CI: true
           npm_config_build_from_source: true
@@ -129,8 +139,14 @@ jobs:
 
             yarn
             yarn test
-
-            yarn pkg-prebuilds-copy --source build/Release/$BINDING_NAME.node --name=$BINDING_NAME --strip --napi_version=$NAPI_VERSION --arch=${{ matrix.arch }} --libc=${{ matrix.libc }}
+            yarn pkg-prebuilds-copy ${{ matrix.extra-copy-args }} \
+              --baseDir build/Release \
+              --source $BINDING_NAME.node \
+              --name=$BINDING_NAME \
+              --strip \
+              --napi_version=$NAPI_VERSION \
+              --arch=${{ matrix.arch }} \
+              --libc=${{ matrix.libc }}
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3

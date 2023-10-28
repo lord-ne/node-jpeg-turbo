@@ -1,6 +1,6 @@
 {
   "name": "@julusian/jpeg-turbo",
-  "version": "2.1.0",
+  "version": "2.2.0-0",
   "description": "Limited libjpeg-turbo bindings for Node.js.",
   "keywords": [
     "jpeg",
@@ -25,10 +25,11 @@
   "dependencies": {
     "cmake-js": "^7.2.0",
     "node-addon-api": "^6.0.0",
-    "pkg-prebuilds": "~0.1.0"
+    "pkg-prebuilds": "~0.2.0"
   },
   "scripts": {
     "install": "pkg-prebuilds-verify ./binding-options.js || cmake-js compile --target jpeg-turbo",
+    "build": "cmake-js build --target jpeg-turbo",
     "rebuild": "cmake-js rebuild --target jpeg-turbo",
     "test": "jest"
   },
