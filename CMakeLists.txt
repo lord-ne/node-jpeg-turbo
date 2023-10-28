@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
 cmake_policy(SET CMP0091 NEW)
 cmake_policy(SET CMP0042 NEW)
-cmake_policy(SET CMP0135 NEW)
+# cmake_policy(SET CMP0135 NEW)
 include(ExternalProject)
 
 project (jpeg-turbo)
@@ -39,20 +39,18 @@ if(UNIX AND NOT APPLE)
   # build shared on linux, to avoid conflicts with libjpeg built into electron
   set(ENABLE_SHARED 1)
   set(ENABLE_STATIC 0)
-  set(LINK_JPEG "turbojpeg")
 
 else()
   # build static elsewhere
   set(ENABLE_SHARED 0)
   set(ENABLE_STATIC 1)
-  set(LINK_JPEG "turbojpeg-static")
 endif()
 
 # Download and build libjpeg-turbo
 ExternalProject_Add(libjpeg-turbo
   URL ${libjpeg-turbo_url}
   URL_MD5 ${libjpeg-turbo_md5}
-  CMAKE_ARGS -DENABLE_SHARED=${ENABLE_SHARED} -DENABLE_STATIC=${ENABLE_STATIC}
+  CMAKE_ARGS -DENABLE_SHARED=${ENABLE_SHARED} -DENABLE_STATIC=${ENABLE_STATIC} -DCMAKE_POSITION_INDEPENDENT_CODE=ON
   INSTALL_COMMAND ""
 )
 ExternalProject_Get_Property(libjpeg-turbo SOURCE_DIR)
@@ -67,7 +65,7 @@ add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES} ${HEADER_FILES} ${CMAKE_JS_SR
 set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "" SUFFIX ".node")
 target_include_directories(${PROJECT_NAME} PRIVATE ${JPEG_INCLUDE_DIR})
 target_link_directories(${PROJECT_NAME} PRIVATE ${JPEG_LIB_DIR})
-target_link_libraries(${PROJECT_NAME} ${CMAKE_JS_LIB} ${LINK_JPEG})
+target_link_libraries(${PROJECT_NAME} ${CMAKE_JS_LIB} turbojpeg)
 add_dependencies(${PROJECT_NAME} libjpeg-turbo)
 
 if(MSVC AND CMAKE_JS_NODELIB_DEF AND CMAKE_JS_NODELIB_TARGET)
