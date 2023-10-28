@@ -57,6 +57,15 @@ ExternalProject_Get_Property(libjpeg-turbo SOURCE_DIR)
 set(JPEG_INCLUDE_DIR ${SOURCE_DIR})
 ExternalProject_Get_Property(libjpeg-turbo BINARY_DIR)
 set(JPEG_LIB_DIR ${BINARY_DIR})
+set(JPEG_LIB turbojpeg)
+
+if (MSVC)
+  # Windows uses a different path for some reason
+  set(JPEG_LIB_DIR ${JPEG_LIB_DIR}/Release)
+  set(JPEG_LIB turbojpeg-static)
+endif()
+
+message("JP ${JPEG_LIB_DIR}")
 
 set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
 set(CMAKE_INSTALL_RPATH "$ORIGIN")
@@ -65,7 +74,7 @@ add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES} ${HEADER_FILES} ${CMAKE_JS_SR
 set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "" SUFFIX ".node")
 target_include_directories(${PROJECT_NAME} PRIVATE ${JPEG_INCLUDE_DIR})
 target_link_directories(${PROJECT_NAME} PRIVATE ${JPEG_LIB_DIR})
-target_link_libraries(${PROJECT_NAME} ${CMAKE_JS_LIB} turbojpeg)
+target_link_libraries(${PROJECT_NAME} ${CMAKE_JS_LIB} ${JPEG_LIB})
 add_dependencies(${PROJECT_NAME} libjpeg-turbo)
 
 if(MSVC AND CMAKE_JS_NODELIB_DEF AND CMAKE_JS_NODELIB_TARGET)
