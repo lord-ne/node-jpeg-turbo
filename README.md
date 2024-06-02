@@ -1,11 +1,11 @@
-# @julusian/jpeg-turbo
+# @lord_ne/jpeg-turbo
 
-![Node CI](https://github.com/Julusian/node-jpeg-turbo/workflows/Node%20CI/badge.svg)
-[![npm](https://img.shields.io/npm/v/@julusian/jpeg-turbo.svg)](https://www.npmjs.com/package/@julusian/jpeg-turbo)
-[![npm](https://img.shields.io/npm/dm/@julusian/jpeg-turbo.svg)](https://www.npmjs.com/package/@julusian/jpeg-turbo)
-[![npm](https://img.shields.io/npm/l/@julusian/jpeg-turbo.svg)](LICENSE)
+![Node CI](https://github.com/lord-ne/node-jpeg-turbo/workflows/Node%20CI/badge.svg)
+[![npm](https://img.shields.io/npm/v/@lord_ne/jpeg-turbo.svg)](https://www.npmjs.com/package/@lord_ne/jpeg-turbo)
+[![npm](https://img.shields.io/npm/dm/@lord_ne/jpeg-turbo.svg)](https://www.npmjs.com/package/@lord_ne/jpeg-turbo)
+[![npm](https://img.shields.io/npm/l/@lord_ne/jpeg-turbo.svg)](LICENSE)
 
-This is a fork of [jpeg-turbo](https://github.com/sorccu/node-jpeg-turbo) with the intention of being maintained and bringing support for new versions of node
+This is a fork of a [fork](https://github.com/julusian/node-jpeg-turbo) of [jpeg-turbo](https://github.com/sorccu/node-jpeg-turbo) with the intention of exposing more features of the underlying C library.
 
 **node-jpeg-turbo** provides minimal [libjpeg-turbo](http://libjpeg-turbo.org/) bindings for [Node.js](https://nodejs.org/). It is very, very fast compared to other alternatives, such as [node-imagemagick-native](https://github.com/mash/node-imagemagick-native) or [jpeg-js](https://github.com/eugeneware/jpeg-js).
 
@@ -15,7 +15,7 @@ Please ask if you need more methods exposed.
 
 All versions of Node still in [*active* Long-term Support](https://github.com/nodejs/LTS#lts-schedule) and the current development version are supported. Older versions may or may not work; they are not and will not be supported.
 
-We provide prebuilds for some platforms, meaning that you should not have to compile native bindings from source very often. The bindings are hosted at and automatically installed from our [GitHub Releases](https://github.com/julusian/node-jpeg-turbo).
+We provide prebuilds for some platforms, meaning that you should not have to compile native bindings from source very often. The bindings are hosted at and automatically installed from our [GitHub Releases](https://github.com/lord-ne/node-jpeg-turbo).
 
 ### If you must build from source
 
@@ -88,13 +88,13 @@ Make sure you've got the [requirements](#requirements) installed first.
 Using [yarn](https://yarnpkg.com/):
 
 ```sh
-yarn add @julusian/jpeg-turbo
+yarn add @lord_ne/jpeg-turbo
 ```
 
 Using [npm](https://www.npmjs.com/):
 
 ```sh
-npm install --save @julusian/jpeg-turbo
+npm install --save @lord_ne/jpeg-turbo
 ```
 
 ## API
@@ -111,7 +111,7 @@ If you'd like to preallocate a `Buffer` for `jpg.compressSync()`, use this metho
 
 ```js
 var fs = require('fs')
-var jpg = require('@julusian/jpeg-turbo')
+var jpg = require('@lord_ne/jpeg-turbo')
 
 var raw = fs.readFileSync('raw.rgba')
 
@@ -147,7 +147,7 @@ For efficiency reasons you may choose to encode into a preallocated `Buffer`. Wh
 
 ```js
 var fs = require('fs')
-var jpg = require('@julusian/jpeg-turbo')
+var jpg = require('@lord_ne/jpeg-turbo')
 
 var raw = fs.readFileSync('raw.rgba')
 
@@ -183,7 +183,7 @@ Decompresses (i.e. decodes) the JPG image into raw pixel data.
 
 ```js
 var fs = require('fs')
-var jpg = require('@julusian/jpeg-turbo')
+var jpg = require('@lord_ne/jpeg-turbo')
 
 var image = fs.readFileSync('image.jpg')
 
