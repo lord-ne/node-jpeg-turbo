@@ -19,6 +19,7 @@ set(HEADER_FILES
   "src/compress.h"
   "src/consts.h"
   "src/decompress.h"
+  "src/read_dct.h"
   "src/enums.h"
   "src/util.h"
 )
@@ -26,6 +27,7 @@ set(SOURCE_FILES
   "src/buffersize.cc"
   "src/compress.cc"
   "src/decompress.cc"
+  "src/read_dct.cc"
   "src/enums.cc"
   "src/util.cc"
   "src/exports.cc"
@@ -57,6 +59,8 @@ ExternalProject_Get_Property(libjpeg-turbo SOURCE_DIR)
 set(JPEG_INCLUDE_DIR ${SOURCE_DIR})
 ExternalProject_Get_Property(libjpeg-turbo BINARY_DIR)
 set(JPEG_LIB_DIR ${BINARY_DIR})
+set(JPEG_GENERATED_INCLUDE_DIR ${BINARY_DIR})
+
 set(JPEG_LIB turbojpeg)
 
 if (MSVC)
@@ -72,7 +76,7 @@ set(CMAKE_INSTALL_RPATH "$ORIGIN")
 
 add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES} ${HEADER_FILES} ${CMAKE_JS_SRC})
 set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "" SUFFIX ".node")
-target_include_directories(${PROJECT_NAME} PRIVATE ${JPEG_INCLUDE_DIR})
+target_include_directories(${PROJECT_NAME} PRIVATE ${JPEG_INCLUDE_DIR} ${JPEG_GENERATED_INCLUDE_DIR})
 target_link_directories(${PROJECT_NAME} PRIVATE ${JPEG_LIB_DIR})
 target_link_libraries(${PROJECT_NAME} ${CMAKE_JS_LIB} ${JPEG_LIB})
 add_dependencies(${PROJECT_NAME} libjpeg-turbo)
