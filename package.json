@@ -1,6 +1,6 @@
 {
   "name": "@lord_ne/jpeg-turbo",
-  "version": "2.2.0-0",
+  "version": "2.3.0-alpha",
   "description": "Limited libjpeg-turbo bindings for Node.js.",
   "keywords": [
     "jpeg",
@@ -14,7 +14,7 @@
   },
   "binary": {
     "napi_versions": [
-      7
+      7, 8
     ]
   },
   "engines": {
@@ -24,7 +24,7 @@
   "types": "./module.d.ts",
   "dependencies": {
     "cmake-js": "^7.2.0",
-    "node-addon-api": "^6.0.0",
+    "node-addon-api": "^7.0.0",
     "pkg-prebuilds": "~0.2.0"
   },
   "scripts": {
