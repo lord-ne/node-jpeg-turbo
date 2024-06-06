@@ -2,6 +2,7 @@ const binding = require("pkg-prebuilds")(
   __dirname,
   require("./binding-options")
 );
+const ndarray = require("ndarray");
 
 // Copy exports so that we can customize them on the JS side without
 // overwriting the binding itself.
@@ -35,4 +36,21 @@ module.exports.decompress = function (a, b, c) {
     out.data = out.data.slice(0, out.size);
     return out;
   });
+};
+
+// Convenience wrapper for converting to an ndarry.
+module.exports.readDCTSync = function (a) {
+  var out = binding.readDCTSync(a);
+  for (let str of ["Y", "Cb", "Cr", "K"]) {
+    if (str in out) {
+      out[str] = {
+        data: ndarray(out[str].data, [out[str].height, out[str].width, 8, 8]),
+        qt_no: out[str].qt_no
+      }
+    }
+  }
+
+  out.qts = out.qts.map((tbl) => ndarray(tbl, [8, 8]));
+
+  return out;
 };

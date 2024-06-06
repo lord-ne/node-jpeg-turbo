@@ -4,7 +4,9 @@
 #include <napi.h>
 
 #include <turbojpeg.h>
-#include <jpeglib.h>
+extern "C" {
+  #include <jpeglib.h>
+}
 
 #include "consts.h"
 

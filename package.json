@@ -14,7 +14,8 @@
   },
   "binary": {
     "napi_versions": [
-      7, 8
+      7,
+      8
     ]
   },
   "engines": {
@@ -24,6 +25,7 @@
   "types": "./module.d.ts",
   "dependencies": {
     "cmake-js": "^7.2.0",
+    "ndarray": "^1.0.19",
     "node-addon-api": "^7.0.0",
     "pkg-prebuilds": "~0.2.0"
   },

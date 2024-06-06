@@ -65,7 +65,7 @@ set(JPEG_LIB turbojpeg)
 
 if (MSVC)
   # Windows uses a different path for some reason
-  set(JPEG_LIB_DIR ${JPEG_LIB_DIR}/Release)
+  set(JPEG_LIB_DIR "${JPEG_LIB_DIR}/$<CONFIG>")
   set(JPEG_LIB turbojpeg-static)
 endif()
 
