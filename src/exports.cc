@@ -17,7 +17,6 @@ Napi::Object Init(Napi::Env env, Napi::Object exports)
   exports.Set("compressSync", Napi::Function::New(env, CompressSync));
   exports.Set("decompress", Napi::Function::New(env, DecompressAsync));
   exports.Set("decompressSync", Napi::Function::New(env, DecompressSync));
-
   exports.Set("readDCTSync", Napi::Function::New(env, ReadDCTSync));
 
   InitializeEnums(env, exports);
