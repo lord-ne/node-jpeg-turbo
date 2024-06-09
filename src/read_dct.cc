@@ -3,8 +3,6 @@
 #include <array>
 #include <algorithm>
 
-#define TRACE_PRINT() printf("%s:%d\n\n\n\n\n", __FILE__, __LINE__);
-
 struct JHandle
 {
   jpeg_decompress_struct cinfo;
@@ -38,7 +36,7 @@ struct ReadDCTProps
   std::array<QuantTableInfo, NUM_QUANT_TBLS> quantTables;
 };
 
-Napi::Object ReadDCTResult(const Napi::Env &env,
+Napi::Object ReadDCTResult(Napi::Env const& env,
 Napi::Buffer<uint8_t> const& buffer,
 ReadDCTProps const& props)
 {
@@ -90,7 +88,7 @@ ReadDCTProps const& props)
   return res;
 }
 
-void DoReadDCT(ReadDCTProps &props)
+void DoReadDCT(ReadDCTProps& props)
 {
   auto& cinfo = props.handle->cinfo;
   jvirt_barray_ptr *coeffsArray = jpeg_read_coefficients(&cinfo);
@@ -146,7 +144,7 @@ class ReadDCTWorker : public Napi::AsyncWorker
 {
 public:
   ReadDCTWorker(
-      Napi::Env& env,
+      Napi::Env const& env,
       Napi::Buffer<uint8_t>& srcBuffer,
       Napi::Buffer<uint8_t>& dstBuffer,
       ReadDCTProps&& props)
@@ -174,7 +172,7 @@ public:
     deferred.Resolve(ReadDCTResult(Env(), this->dstBuffer.Value(), this->props));
   }
 
-  void OnError(Napi::Error const &error)
+  void OnError(Napi::Error const& error)
   {
     deferred.Reject(error.Value());
   }
@@ -191,7 +189,7 @@ private:
   ReadDCTProps props;
 };
 
-Napi::Value ReadDCTInner(const Napi::CallbackInfo &info, bool async)
+Napi::Value ReadDCTInner(Napi::CallbackInfo const& info, bool async)
 {
   if (info.Length() < 1)
   {
@@ -274,12 +272,12 @@ Napi::Value ReadDCTInner(const Napi::CallbackInfo &info, bool async)
   }
 }
 
-Napi::Value ReadDCTAsync(const Napi::CallbackInfo &info)
+Napi::Value ReadDCTAsync(Napi::CallbackInfo const& info)
 {
   return ReadDCTInner(info, true);
 }
 
-Napi::Value ReadDCTSync(const Napi::CallbackInfo &info)
+Napi::Value ReadDCTSync(Napi::CallbackInfo const& info)
 {
   return ReadDCTInner(info, false);
 }
