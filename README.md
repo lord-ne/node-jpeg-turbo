@@ -15,7 +15,7 @@ Please ask if you need more methods exposed.
 
 All versions of Node still in [*active* Long-term Support](https://github.com/nodejs/LTS#lts-schedule) and the current development version are supported. Older versions may or may not work; they are not and will not be supported.
 
-We provide prebuilds for some platforms, meaning that you should not have to compile native bindings from source very often. The bindings are hosted at and automatically installed from our [GitHub Releases](https://github.com/lord-ne/node-jpeg-turbo).
+We provide prebuilds for some platforms, meaning that you should not have to compile native bindings from source very often. The bindings are hosted at and automatically installed from our [GitHub Releases](https://github.com/lord-ne/node-jpeg-turbo). TODO: Figure out how to actually do that.
 
 ### If you must build from source
 
