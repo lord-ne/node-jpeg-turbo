@@ -1,3 +1,5 @@
+import { NdArray } from "@types/ndarray";
+
 export type Format = number;
 export const FORMAT_RGB: Format;
 export const FORMAT_BGR: Format;
@@ -63,3 +65,20 @@ export function decompress(
   options?: DecodeOptions
 ): Promise<DecompressReturn>;
 export function decompress(image: Buffer, options?: DecodeOptions): Promise<DecompressReturn>;
+
+export interface DCTComponent {
+  data: NdArray<Int16Array>;
+  qt_no: Number;
+}
+
+export interface DCTData {
+  Y: ReadDCTComponent;
+  Cb: ReadDCTComponent;
+  Cr: ReadDCTComponent;
+  K?: ReadDCTComponent;
+  qts: Array<NdArray<Uint16Array>>;
+}
+
+export function readDCTSync(image: Buffer, preallocatedOut?: Buffer): DCTData;
+export function readDCT(image: Buffer, preallocatedOut?: Buffer): Promise<DCTData>;
+

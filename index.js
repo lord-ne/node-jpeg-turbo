@@ -38,19 +38,42 @@ module.exports.decompress = function (a, b, c) {
   });
 };
 
-// Convenience wrapper for converting to an ndarry.
-module.exports.readDCTSync = function (a) {
-  var out = binding.readDCTSync(a);
+// Helper for converting the output of readDCT and readDCTSync
+function readDCTOutputTransformer(initial) {
+  var final = {};
+
   for (let str of ["Y", "Cb", "Cr", "K"]) {
-    if (str in out) {
-      out[str] = {
-        data: ndarray(out[str].data, [out[str].height, out[str].width, 8, 8]),
-        qt_no: out[str].qt_no
+    if (str in initial) {
+      final[str] = {
+        data: ndarray(
+          new Int16Array(
+            initial.buffer.buffer,
+            initial[str].data_offset_bytes,
+            initial[str].data_length_elements),
+          [initial[str].height, initial[str].width, 8, 8]),
+        qt_no: initial[str].qt_no
       }
     }
   }
 
-  out.qts = out.qts.map((tbl) => ndarray(tbl, [8, 8]));
+  final.qts = initial.qts.map((qt) =>
+    ndarray(
+      new Uint16Array(
+        initial.buffer.buffer,
+        qt.data_offset_bytes,
+        qt.data_length_elements),
+      [8, 8]));
 
-  return out;
+  return final;
+}
+
+// Convenience wrapper for extracting buffers.
+module.exports.readDCTSync = function (a, b) {
+  return readDCTOutputTransformer(binding.readDCTSync(a, b));
 };
+
+// Convenience wrapper for extracting buffers.
+module.exports.readDCT = function (a, b) {
+  return binding.readDCT(a, b).then(readDCTOutputTransformer);
+};
+

@@ -194,6 +194,8 @@ var options = {
 var decoded = jpg.decompressSync(image, options)
 ```
 
+# TODO: API for DCT functions
+
 ## Thanks
 
 * https://github.com/A2K/node-jpeg-turbo-scaler
