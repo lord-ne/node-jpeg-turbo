@@ -39,8 +39,8 @@ struct ReadDCTProps
 };
 
 Napi::Object ReadDCTResult(const Napi::Env &env,
-Napi::Buffer<uint8_t>& buffer,
-const ReadDCTProps &props)
+Napi::Buffer<uint8_t> const& buffer,
+ReadDCTProps const& props)
 {
   Napi::Object res = Napi::Object::New(env);
   const char* componentNames[] = {"Y", "Cb", "Cr", "K"};
