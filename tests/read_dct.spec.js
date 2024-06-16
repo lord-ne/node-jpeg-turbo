@@ -4,8 +4,9 @@ const path = require("path");
 const zlib = require('node:zlib');
 
 const sampleJpeg1 = readFileSync(path.join(__dirname, "github_logo.jpg"));
+const corruptedJpeg1 = readFileSync(path.join(__dirname, "github_logo.jpg.corrupted"));
 
-// DCT components extracted using an external library
+// Expected DCT components, extracted using an external library
 const expectedJpeg1 = JSON.parse(zlib.unzipSync(readFileSync(path.join(__dirname, "github_logo.json.gz"))))
 
 const arr_eq = (nd_arr, nested_arr, index_location = []) => {
@@ -80,7 +81,10 @@ describe("read_dct", () => {
     expect(() => readDCTSync(sampleJpeg1, Buffer.alloc(neededSpace - 1))).toThrow('Insufficient output buffer');
   });
 
-  test("check readDCTSync libjpeg errors throw exceptions", async () => {
+  test("check readDCT jpeglib errors throw exceptions", async () => {
     expect(() => { readDCTSync(Buffer.alloc(100)) }).toThrow('jpeglib exited with an error: Not a JPEG file: starts with 0x00 0x00');
+    expect(() => { readDCTSync(corruptedJpeg1) }).toThrow('jpeglib exited with an error: Bogus Huffman table definition');
+    await expect(async () => { await readDCT(Buffer.alloc(100)) }).rejects.toThrow('jpeglib exited with an error: Not a JPEG file: starts with 0x00 0x00');
+    await expect(async () => { await readDCT(corruptedJpeg1) }).rejects.toThrow('jpeglib exited with an error: Bogus Huffman table definition');
   });
 });
