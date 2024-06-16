@@ -23,6 +23,7 @@ set(HEADER_FILES
   "src/consts.h"
   "src/decompress.h"
   "src/read_dct.h"
+  "src/write_dct.h"
   "src/enums.h"
   "src/util.h"
 )
@@ -31,6 +32,7 @@ set(SOURCE_FILES
   "src/compress.cc"
   "src/decompress.cc"
   "src/read_dct.cc"
+  "src/write_dct.cc"
   "src/enums.cc"
   "src/util.cc"
   "src/exports.cc"

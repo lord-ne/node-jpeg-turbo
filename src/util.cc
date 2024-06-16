@@ -1,4 +1,9 @@
 #include "util.h"
+#include <type_traits>
+
+extern "C" {
+  #include <jpegint.h> // CSTATE_START, DSTATE_START
+}
 
 BufferSizeOptions ParseBufferSizeOptions(const Napi::Env &env, const Napi::Object &options)
 {
@@ -56,7 +61,6 @@ NAPI_NO_RETURN void ErrorExitThrow(j_common_ptr cinfo)
 
   jpeg_destroy(cinfo);
 
-  fprintf(stderr, "%s\n", buffer);
   throw JPEGLibError{buffer};
 }
 
@@ -69,8 +73,32 @@ void SetupThrowingErrorManager(jpeg_error_mgr * err)
 namespace internal
 {
   template<typename C_OR_D>
+  JHandle<C_OR_D>::DataHolder::DataHolder()
+    : cinfo{}, jerr{}
+  {}
+
+  template<typename C_OR_D>
+  JHandle<C_OR_D>::DataHolder::~DataHolder()
+  {
+    // If cinfo has already been destroyed, return
+    if (this->cinfo.mem == nullptr) {
+      return;
+    }
+
+    // We do this check to avoid calling abort if it has already been called on
+    // cinfo, which may be unsafe
+    if ((!this->cinfo.is_decompressor && this->cinfo.global_state != CSTATE_START)
+      || (this->cinfo.is_decompressor && this->cinfo.global_state != DSTATE_START))
+    {
+      jpeg_abort(asJCommon(&this->cinfo));
+    }
+
+    jpeg_destroy(asJCommon(&this->cinfo));
+  }
+
+  template<typename C_OR_D>
   JHandle<C_OR_D>::JHandle()
-    : data(std::make_unique<JHandle<C_OR_D>::JHandleDataHolder>())
+    : data(std::make_unique<JHandle<C_OR_D>::DataHolder>())
   {}
 
   template<typename C_OR_D>

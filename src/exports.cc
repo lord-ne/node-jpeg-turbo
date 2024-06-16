@@ -4,6 +4,7 @@
 #include "compress.h"
 #include "decompress.h"
 #include "read_dct.h"
+#include "write_dct.h"
 
 Napi::Object Init(Napi::Env env, Napi::Object exports)
 {
@@ -19,6 +20,8 @@ Napi::Object Init(Napi::Env env, Napi::Object exports)
   exports.Set("decompressSync", Napi::Function::New(env, DecompressSync));
   exports.Set("readDCT", Napi::Function::New(env, ReadDCTAsync));
   exports.Set("readDCTSync", Napi::Function::New(env, ReadDCTSync));
+  exports.Set("writeDCT", Napi::Function::New(env, WriteDCTAsync));
+  exports.Set("writeDCTSync", Napi::Function::New(env, WriteDCTSync));
 
   InitializeEnums(env, exports);
 

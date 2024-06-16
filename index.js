@@ -3,6 +3,7 @@ const binding = require("pkg-prebuilds")(
   require("./binding-options")
 );
 const ndarray = require("ndarray");
+const assert = require('node:assert/strict');
 
 // Copy exports so that we can customize them on the JS side without
 // overwriting the binding itself.
@@ -75,5 +76,57 @@ module.exports.readDCTSync = function (a, b) {
 // Convenience wrapper for extracting buffers.
 module.exports.readDCT = function (a, b) {
   return binding.readDCT(a, b).then(readDCTOutputTransformer);
+};
+
+// Helper for converting the input of writeDCT and writeDCTSync
+function writeDCTInputTransformer(initial) {
+  var final = {};
+
+  for (let str of ["Y", "Cb", "Cr", "K"]) {
+    if (str in initial) {
+      let shape = initial[str].data.shape
+      assert.equal(shape.length, 4, "Error: Passed in component arrays must have shape HxWx8x8")
+      assert.equal(shape[2], 8, "Error: Passed in component arrays must have shape HxWx8x8")
+      assert.equal(shape[3], 8, "Error: Passed in component arrays must have shape HxWx8x8")
+      assert.equal(initial[str].data.stride, [shape[0] * shape[1] * 64, shape[0] * 64, 64, 8],
+        "Error: Passed in component arrays must have C-order stride");
+
+      final[str] = {
+        data: initial[str].data.data,
+        data_offset_elements: initial[str].data.offset,
+        height: initial[str].data.shape[0],
+        width: initial[str].data.shape[1],
+        qt_no: initial[str].qt_no
+      }
+    }
+  }
+
+  final.qts = initial.qts.map((qt) => {
+    if (!qt) {
+      return {
+        data: null,
+        data_offset_elements: 0,
+      }
+    }
+
+    assert.equal(qt.shape, [8, 8], "Error: Passed in qt arrays must have shape 8x8")
+    assert.equal(initial[str].data.stride, [64, 8], "Error: Passed in qt arrays must have C-order stride")
+    return {
+      data: qt.data,
+      data_offset_elements: qt.offset,
+    }
+  });
+
+  return final;
+}
+
+// Convenience wrapper for extracting buffers.
+module.exports.writeDCTSync = function (a, b, c) {
+  return binding.writeDCTSync(a, writeDCTInputTransformer(b), c);
+};
+
+// Convenience wrapper for extracting buffers.
+module.exports.writeDCT = function (a, b, c) {
+  return binding.writeDCT(a, writeDCTInputTransformer(b), c);
 };
 

@@ -32,12 +32,8 @@ class JPEGLibError : public std::runtime_error
 
 void SetupThrowingErrorManager(jpeg_error_mgr * err);
 
-#define RETHROW_EXCEPTIONS_AS_JS_EXCEPTIONS(Env, ...) \
-{                                                     \
-  try                                                 \
-  {                                                   \
-    ;__VA_ARGS__;                                     \
-  }                                                   \
+// A catch block that rethrows non-Napi excceptions as Napi exceptions
+#define RETHROW_EXCEPTIONS_AS_JS_EXCEPTIONS(Env)      \
   catch (Napi::Error const&)                          \
   {                                                   \
     throw;                                            \
@@ -45,26 +41,34 @@ void SetupThrowingErrorManager(jpeg_error_mgr * err);
   catch(std::exception const& e)                      \
   {                                                   \
     throw Napi::Error::New(Env, e.what());            \
-  }                                                   \
-}
+  }
 
 namespace internal
 {
   template<typename COMPRESS_OR_DECOMPRESS_STRUCT>
   class JHandle
   {
-    struct JHandleDataHolder
+    struct DataHolder
     {
       COMPRESS_OR_DECOMPRESS_STRUCT cinfo;
       jpeg_error_mgr jerr;
+
+      DataHolder();
+      ~DataHolder();
+
+      DataHolder(DataHolder&&) = delete;
+      DataHolder& operator=(DataHolder&&) = delete;
+      DataHolder(DataHolder const&) = delete;
+      DataHolder& operator=(DataHolder const&) = delete;
     };
 
-    std::unique_ptr<JHandleDataHolder> data;
+    std::unique_ptr<DataHolder> data;
   public:
     JHandle();
     JHandle(JHandle&&) = default;
     JHandle& operator=(JHandle&&) = default;
     ~JHandle() = default;
+
     COMPRESS_OR_DECOMPRESS_STRUCT * cinfo();
     COMPRESS_OR_DECOMPRESS_STRUCT const * cinfo() const;
     jpeg_error_mgr * jerr();
@@ -76,5 +80,21 @@ namespace internal
 // These templates are explicitly instantiated in util.cc
 using JCompressHandle = internal::JHandle<jpeg_compress_struct>;
 using JDecompressHandle = internal::JHandle<jpeg_decompress_struct>;
+
+inline jpeg_common_struct * asJCommon(jpeg_compress_struct * in) {
+  return reinterpret_cast<jpeg_common_struct *>(in);
+}
+
+inline jpeg_common_struct * asJCommon(jpeg_decompress_struct * in) {
+  return reinterpret_cast<jpeg_common_struct *>(in);
+}
+
+inline jpeg_common_struct const * asJCommon(jpeg_compress_struct const * in) {
+  return reinterpret_cast<jpeg_common_struct const *>(in);
+}
+
+inline jpeg_common_struct const * asJCommon(jpeg_decompress_struct const * in) {
+  return reinterpret_cast<jpeg_common_struct const *>(in);
+}
 
 #endif

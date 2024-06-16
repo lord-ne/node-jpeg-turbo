@@ -72,13 +72,16 @@ export interface DCTComponent {
 }
 
 export interface DCTData {
-  Y: ReadDCTComponent;
-  Cb: ReadDCTComponent;
-  Cr: ReadDCTComponent;
-  K?: ReadDCTComponent;
+  Y: DCTComponent;
+  Cb: DCTComponent;
+  Cr: DCTComponent;
+  K?: DCTComponent;
   qts: Array<NdArray<Uint16Array>>;
 }
 
 export function readDCTSync(image: Buffer, preallocatedOut?: Buffer): DCTData;
 export function readDCT(image: Buffer, preallocatedOut?: Buffer): Promise<DCTData>;
+
+export function writeDCTSync(originalImage: Buffer, dctData: DCTData, preallocatedOut?: Buffer): Buffer;
+export function writeDCT(originalImage: Buffer, dctData: DCTData, preallocatedOut?: Buffer): Promise<Buffer>;
 

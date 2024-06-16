@@ -157,16 +157,16 @@ public:
 
   void Execute()
   {
-    RETHROW_EXCEPTIONS_AS_JS_EXCEPTIONS(Env(), {
+    try {
       DoReadDCT(this->props);
-    })
+    } RETHROW_EXCEPTIONS_AS_JS_EXCEPTIONS(Env())
   }
 
   void OnOK()
   {
-    RETHROW_EXCEPTIONS_AS_JS_EXCEPTIONS(Env(), {
+    try {
       deferred.Resolve(ReadDCTResult(Env(), this->dstBuffer.Value(), this->props));
-    })
+    } RETHROW_EXCEPTIONS_AS_JS_EXCEPTIONS(Env())
   }
 
   void OnError(Napi::Error const& error)
@@ -188,89 +188,91 @@ private:
 
 Napi::Value ReadDCTInner(Napi::CallbackInfo const& info, bool async)
 {
-  RETHROW_EXCEPTIONS_AS_JS_EXCEPTIONS(info.Env(), {
-    if (info.Length() < 1)
-    {
-      throw Napi::TypeError::New(info.Env(), "Not enough arguments");
-    }
+  if (info.Length() < 1)
+  {
+    throw Napi::TypeError::New(info.Env(), "Not enough arguments");
+  }
 
-    if (!info[0].IsBuffer())
-    {
-      throw Napi::TypeError::New(info.Env(), "Invalid source buffer");
-    }
-    Napi::Buffer<uint8_t> srcBuffer = info[0].As<Napi::Buffer<uint8_t>>();
+  if (!info[0].IsBuffer())
+  {
+    throw Napi::TypeError::New(info.Env(), "Invalid source buffer");
+  }
+  Napi::Buffer<uint8_t> srcBuffer = info[0].As<Napi::Buffer<uint8_t>>();
 
-    bool bufferProvided = ((info.Length() > 1) && (info[1].IsBuffer()));
+  bool bufferProvided = ((info.Length() > 1) && (info[1].IsBuffer()));
 
-    JDecompressHandle handle{};
-    SetupThrowingErrorManager(handle.jerr());
-    handle.cinfo()->err = handle.jerr();
+  JDecompressHandle handle{};
+  SetupThrowingErrorManager(handle.jerr());
+  handle.cinfo()->err = handle.jerr();
 
-    jpeg_create_decompress(handle.cinfo());
+  jpeg_create_decompress(handle.cinfo());
 
-    jpeg_mem_src(handle.cinfo(), srcBuffer.Data(), srcBuffer.ByteLength());
-    jpeg_read_header(handle.cinfo(), true);
+  jpeg_mem_src(handle.cinfo(), srcBuffer.Data(), srcBuffer.ByteLength());
+  jpeg_read_header(handle.cinfo(), true);
 
-    ReadDCTProps props = {};
+  ReadDCTProps props = {};
 
-    std::size_t bufLengthBytes = 0;
+  std::size_t bufLengthBytes = 0;
 
-    for (int chan = 0; chan < handle.cinfo()->num_components; ++chan)
-    {
-      ComponentInfo& comp = props.components[chan];
-      jpeg_component_info& compInfo = handle.cinfo()->comp_info[chan];
+  for (int chan = 0; chan < handle.cinfo()->num_components; ++chan)
+  {
+    ComponentInfo& comp = props.components[chan];
+    jpeg_component_info& compInfo = handle.cinfo()->comp_info[chan];
 
-      comp.componentExists = true;
-      comp.width = compInfo.width_in_blocks;
-      comp.height = compInfo.height_in_blocks;
-      comp.dataOffsetBytes = bufLengthBytes;
-      comp.dataLengthElements = comp.height * comp.width * DCTSIZE2;
+    comp.componentExists = true;
+    comp.width = compInfo.width_in_blocks;
+    comp.height = compInfo.height_in_blocks;
+    comp.dataOffsetBytes = bufLengthBytes;
+    comp.dataLengthElements = comp.height * comp.width * DCTSIZE2;
 
-      bufLengthBytes += comp.dataLengthElements * sizeof(JCOEF);
-    }
+    bufLengthBytes += comp.dataLengthElements * sizeof(JCOEF);
+  }
 
-    for (int i = 0; i < NUM_QUANT_TBLS; ++i)
-    {
-      QuantTableInfo& qt = props.quantTables[i];
-      qt.dataOffsetBytes = bufLengthBytes;
-      qt.dataLengthElements = DCTSIZE2;
-      bufLengthBytes += qt.dataLengthElements * sizeof(UINT16);
-    }
+  for (int i = 0; i < NUM_QUANT_TBLS; ++i)
+  {
+    QuantTableInfo& qt = props.quantTables[i];
+    qt.dataOffsetBytes = bufLengthBytes;
+    qt.dataLengthElements = DCTSIZE2;
+    bufLengthBytes += qt.dataLengthElements * sizeof(UINT16);
+  }
 
-    Napi::Buffer<uint8_t> dstBuffer = bufferProvided ?
-      info[1].As<Napi::Buffer<uint8_t>>()
-      : Napi::Buffer<uint8_t>::New(info.Env(), bufLengthBytes);
+  Napi::Buffer<uint8_t> dstBuffer = bufferProvided ?
+    info[1].As<Napi::Buffer<uint8_t>>()
+    : Napi::Buffer<uint8_t>::New(info.Env(), bufLengthBytes);
 
-    if (bufferProvided && dstBuffer.ByteLength() < bufLengthBytes)
-    {
-      throw Napi::TypeError::New(info.Env(), "Insufficient output buffer");
-    }
+  if (bufferProvided && dstBuffer.ByteLength() < bufLengthBytes)
+  {
+    throw Napi::TypeError::New(info.Env(), "Insufficient output buffer");
+  }
 
-    props.resData = dstBuffer.Data();
+  props.resData = dstBuffer.Data();
 
-    props.handle = std::move(handle);
+  props.handle = std::move(handle);
 
-    if (async)
-    {
-      auto* wk = new ReadDCTWorker(info.Env(),
-        srcBuffer, dstBuffer, std::move(props));
-      wk->Queue();
-      return wk->GetPromise();
-    }
-    else
-    {
-      DoReadDCT(props);
-      return ReadDCTResult(info.Env(), dstBuffer, props);
-    }
-  })
+  if (async)
+  {
+    auto* wk = new ReadDCTWorker(info.Env(),
+      srcBuffer, dstBuffer, std::move(props));
+    wk->Queue();
+    return wk->GetPromise();
+  }
+  else
+  {
+    DoReadDCT(props);
+    return ReadDCTResult(info.Env(), dstBuffer, props);
+  }
 }
 
 Napi::Value ReadDCTAsync(Napi::CallbackInfo const& info)
 {
-  return ReadDCTInner(info, true);
+  try {
+    return ReadDCTInner(info, true);
+  } RETHROW_EXCEPTIONS_AS_JS_EXCEPTIONS(info.Env())
 }
 
 Napi::Value ReadDCTSync(Napi::CallbackInfo const& info)
 {
-  return ReadDCTInner(info, false);
+  try {
+    return ReadDCTInner(info, false);
+  } RETHROW_EXCEPTIONS_AS_JS_EXCEPTIONS(info.Env())
 }
