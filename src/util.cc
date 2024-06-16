@@ -69,7 +69,7 @@ void SetupThrowingErrorManager(jpeg_error_mgr * err)
 namespace internal
 {
   template<typename C_OR_D>
-  JHandle<C_OR_D>::JHandle<C_OR_D>()
+  JHandle<C_OR_D>::JHandle()
     : data(std::make_unique<JHandle<C_OR_D>::JHandleDataHolder>())
   {}
 
