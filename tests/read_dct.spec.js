@@ -79,4 +79,8 @@ describe("read_dct", () => {
     expect(() => readDCTSync(sampleJpeg1, Buffer.alloc(1000))).toThrow('Insufficient output buffer');
     expect(() => readDCTSync(sampleJpeg1, Buffer.alloc(neededSpace - 1))).toThrow('Insufficient output buffer');
   });
+
+  test("check readDCTSync libjpeg errors throw exceptions", async () => {
+    expect(() => { readDCTSync(Buffer.alloc(100)) }).toThrow('jpeglib exited with an error: Not a JPEG file: starts with 0x00 0x00');
+  });
 });

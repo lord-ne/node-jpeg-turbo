@@ -1,9 +1,5 @@
 #include "util.h"
 
-// Napi::Value getProperty(const Napi::Object &obj, const char *name)
-// {
-// }
-
 BufferSizeOptions ParseBufferSizeOptions(const Napi::Env &env, const Napi::Object &options)
 {
   Napi::Value tmpWidth = options.Get("width");
@@ -49,3 +45,59 @@ BufferSizeOptions ParseBufferSizeOptions(const Napi::Env &env, const Napi::Objec
 
   return BufferSizeOptions{true, width, height, subsampling};
 }
+
+#define ADDITIONAL_MESSAGE "jpeglib exited with an error: "
+static constexpr std::size_t ADDITIONAL_MESSAGE_LENGTH = sizeof(ADDITIONAL_MESSAGE) - 1;
+
+NAPI_NO_RETURN void ErrorExitThrow(j_common_ptr cinfo)
+{
+  char buffer[ADDITIONAL_MESSAGE_LENGTH + JMSG_LENGTH_MAX] = ADDITIONAL_MESSAGE;
+  (*cinfo->err->format_message) (cinfo, buffer + ADDITIONAL_MESSAGE_LENGTH);
+
+  jpeg_destroy(cinfo);
+
+  fprintf(stderr, "%s\n", buffer);
+  throw JPEGLibError{buffer};
+}
+
+void SetupThrowingErrorManager(jpeg_error_mgr * err)
+{
+  jpeg_std_error(err);
+  err->error_exit = ErrorExitThrow;
+}
+
+namespace internal
+{
+  template<typename C_OR_D>
+  JHandle<C_OR_D>::JHandle<C_OR_D>()
+    : data(std::make_unique<JHandle<C_OR_D>::JHandleDataHolder>())
+  {}
+
+  template<typename C_OR_D>
+  C_OR_D * JHandle<C_OR_D>::cinfo()
+  {
+    return &this->data->cinfo;
+  }
+
+  template<typename C_OR_D>
+  C_OR_D const * JHandle<C_OR_D>::cinfo() const
+  {
+    return &this->data->cinfo;
+  }
+
+  template<typename C_OR_D>
+  jpeg_error_mgr * JHandle<C_OR_D>::jerr()
+  {
+    return &this->data->jerr;
+  }
+
+  template<typename C_OR_D>
+  jpeg_error_mgr const * JHandle<C_OR_D>::jerr() const
+  {
+    return &this->data->jerr;
+  }
+
+  // Explicit instantiation
+  template class JHandle<jpeg_compress_struct>;
+  template class JHandle<jpeg_decompress_struct>;
+} // namespace internal

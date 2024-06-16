@@ -6,6 +6,9 @@ include(ExternalProject)
 
 project (jpeg-turbo)
 
+set(INCLUDE_CMAKE_FILE "${CMAKE_CURRENT_LIST_DIR}/include.cmake")
+include (${INCLUDE_CMAKE_FILE})
+
 # define NPI_VERSION
 add_definitions(-DNAPI_VERSION=7)
 
@@ -52,7 +55,7 @@ endif()
 ExternalProject_Add(libjpeg-turbo
   URL ${libjpeg-turbo_url}
   URL_MD5 ${libjpeg-turbo_md5}
-  CMAKE_ARGS -DENABLE_SHARED=${ENABLE_SHARED} -DENABLE_STATIC=${ENABLE_STATIC} -DCMAKE_POSITION_INDEPENDENT_CODE=ON
+  CMAKE_ARGS -DENABLE_SHARED=${ENABLE_SHARED} -DENABLE_STATIC=${ENABLE_STATIC} -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DCMAKE_PROJECT_INCLUDE=${INCLUDE_CMAKE_FILE}
   INSTALL_COMMAND ""
 )
 ExternalProject_Get_Property(libjpeg-turbo SOURCE_DIR)
