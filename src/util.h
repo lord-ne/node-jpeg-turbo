@@ -76,6 +76,9 @@ namespace internal
   };
 }
 
+// Call jpeg_abort and jpeg_destroy on cinfo, if they have not already been called
+void abortAndDestroy(j_common_ptr cinfo);
+
 // Hold a unique_ptr to a jpeg_(de)compress_struct and jpeg_error_mgr.
 // These templates are explicitly instantiated in util.cc
 using JCompressHandle = internal::JHandle<jpeg_compress_struct>;

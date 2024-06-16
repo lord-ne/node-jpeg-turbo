@@ -57,13 +57,18 @@ function readDCTOutputTransformer(initial) {
     }
   }
 
-  final.qts = initial.qts.map((qt) =>
-    ndarray(
+  final.qts = initial.qts.map((qt) => {
+    if (!qt) {
+      return null;
+    }
+
+    return ndarray(
       new Uint16Array(
         initial.buffer.buffer,
         qt.data_offset_bytes,
         qt.data_length_elements),
-      [8, 8]));
+      [8, 8])
+  });
 
   return final;
 }
@@ -103,10 +108,7 @@ function writeDCTInputTransformer(initial) {
 
   final.qts = initial.qts.map((qt) => {
     if (!qt) {
-      return {
-        data: null,
-        data_offset_elements: 0,
-      }
+      return null
     }
 
     assert.equal(qt.shape, [8, 8], "Error: Passed in qt arrays must have shape 8x8")

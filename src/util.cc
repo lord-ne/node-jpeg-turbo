@@ -58,8 +58,9 @@ NAPI_NO_RETURN void ErrorExitThrow(j_common_ptr cinfo)
 {
   char buffer[ADDITIONAL_MESSAGE_LENGTH + JMSG_LENGTH_MAX] = ADDITIONAL_MESSAGE;
   (*cinfo->err->format_message) (cinfo, buffer + ADDITIONAL_MESSAGE_LENGTH);
+  fprintf(stderr, "%s\n", buffer + ADDITIONAL_MESSAGE_LENGTH);
 
-  jpeg_destroy(cinfo);
+  abortAndDestroy(cinfo);
 
   throw JPEGLibError{buffer};
 }
@@ -80,20 +81,7 @@ namespace internal
   template<typename C_OR_D>
   JHandle<C_OR_D>::DataHolder::~DataHolder()
   {
-    // If cinfo has already been destroyed, return
-    if (this->cinfo.mem == nullptr) {
-      return;
-    }
-
-    // We do this check to avoid calling abort if it has already been called on
-    // cinfo, which may be unsafe
-    if ((!this->cinfo.is_decompressor && this->cinfo.global_state != CSTATE_START)
-      || (this->cinfo.is_decompressor && this->cinfo.global_state != DSTATE_START))
-    {
-      jpeg_abort(asJCommon(&this->cinfo));
-    }
-
-    jpeg_destroy(asJCommon(&this->cinfo));
+    abortAndDestroy(asJCommon(&this->cinfo));
   }
 
   template<typename C_OR_D>
@@ -129,3 +117,21 @@ namespace internal
   template class JHandle<jpeg_compress_struct>;
   template class JHandle<jpeg_decompress_struct>;
 } // namespace internal
+
+void abortAndDestroy(j_common_ptr cinfo)
+{
+    // If cinfo has already been destroyed, return
+    if (cinfo == nullptr || cinfo->mem == nullptr) {
+      return;
+    }
+
+    // We do this check to avoid calling abort if it has already been called on
+    // cinfo, which may be unsafe
+    if ((!cinfo->is_decompressor && cinfo->global_state != CSTATE_START)
+      || (cinfo->is_decompressor && cinfo->global_state != DSTATE_START))
+    {
+      jpeg_abort(cinfo);
+    }
+
+    jpeg_destroy(cinfo);
+}
